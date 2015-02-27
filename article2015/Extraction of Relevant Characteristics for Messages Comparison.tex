@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Journal Article
 % LaTeX Template
 % Version 1.3 (9/9/13)
@@ -54,6 +54,8 @@
 \fancyhead[C]{Running title $\bullet$ March 2015 $\bullet$ Vol. XXI, No. 1} % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
+\usepackage{relsize}
+
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -100,15 +102,102 @@ characters. That length was determined based on the average message length of th
 
 The real question is are modern information technology not enough to create a system that can help trespassing the barrier of human capabilities?, is it possible to create a system that can compare a given question against a database of previously asked questions and find out what questions are close enough to mean most likely the same thing?. 
 
-The state of the art for natural language processing has achieved important progress in answering questions algorithms% Enumerate Agichtein, E., Lawrence, S., and Gravano, L. 2004. Learning to find answers to questions on the web.%ACM Transactions on Internet Technology 4(2): 129?162.%Bendersky, M., and Croft, B. 2008. Discovering key concepts in verbose queries. In Proceedings%of the 31st Annual International ACM SIGIR Conference on Research and Development in%Information Retrieval, Singapore, pp. 491?498.%Bilotti, M., Ogilvie, P., Callan, J., and Nyberg, E. 2007. Structured retrieval for question answering.%In Proceedings of the 30th Annual International ACM SIGIR Conference on Research and%Development in Information Retrieval, Amsterdam, The Netherlands, pp. 351?358.%Breimann, L., Friedman, J., Ohlsen, R., and Stone, C. 1984. Classification and Regression Trees.%Wadsworth and Brooks.%Brill, E., Dumais, S., and Banko, M. 2002. An analysis of the AskMSR question-answering%system. In Proceedings of Empirical Methods in Natural Language Processing (EMNLP 2002),%Morristown, N.J., USA, pp. 257?264
-. 
+The state of the art for natural language processing has achieved important progress in answering questions algorithms% Enumerate Agichtein, E., Lawrence, S., and Gravano, L. 2004. Learning to find answers to questions on the web.
+%ACM Transactions on Internet Technology 4(2): 129?162.
+%Bendersky, M., and Croft, B. 2008. Discovering key concepts in verbose queries. In Proceedings
+%of the 31st Annual International ACM SIGIR Conference on Research and Development in
+%Information Retrieval, Singapore, pp. 491?498.
+%Bilotti, M., Ogilvie, P., Callan, J., and Nyberg, E. 2007. Structured retrieval for question answering.
+%In Proceedings of the 30th Annual International ACM SIGIR Conference on Research and
+%Development in Information Retrieval, Amsterdam, The Netherlands, pp. 351?358.
+%Breimann, L., Friedman, J., Ohlsen, R., and Stone, C. 1984. Classification and Regression Trees.
+%Wadsworth and Brooks.
+%Brill, E., Dumais, S., and Banko, M. 2002. An analysis of the AskMSR question-answering
+%system. In Proceedings of Empirical Methods in Natural Language Processing (EMNLP 2002),
+%Morristown, N.J., USA, pp. 257?264
+
+%------------------------------------------------
+\section{Text Being Processed}
+The text being processed is written in natural language. The text is not longer than 200 characters and includes punctuation marks and the Spanish alphabet. It is written in Spanish and it is not error free which means that it may have lexical and syntactical errors. An additional characteristic the text under analysis has is it is written to request information. It was took from a government web site that offers information to the general public. The main objective of such public site is offering information access to anybody that needs it.
+Processing natural language has relevant challenges like identifying unknown words and determine whether that word it is a misspelled word or if it is a word that definitely does not exist for the language. There is another challenge for detecting ambiguous words and assign them the meaning that they are most likely to have with respect a context or a corpus of questions.
+%------------------------------------------------
+\section{Ambiguity}
+As \cite{Monz:2010} suggests, the words with higher inverted document frequency (idf) will be preferred to determine the topic of the short text % citar trabajos que hablen de este tema.
+:
+\begin{equation}
+\label{eq:idf}
+idf(t) = log{\frac{N}{df(t)}}
+\end{equation}
+Where \emph{N} is the number of documents in the collection and \emph{df(t)} is the number of documents in which \emph{t} occurs.
+
+Equation \ref{eq:idf} will help to determine a list of candidate words for to identify the message topic. However, that equation measures frequency not unambiguity. Reference \cite{saif.ea:2012} proposes the following formula to identify unambiguous keywords:
+\begin{equation}
+\label{eq:unambiguous}
+\frac{df(f, c)}{\mathlarger\sum\nolimits df(f, c')}>\alpha
+\end{equation}
+\begin{quotation}
+"In other words, we say that f is unambiguous if one of the concepts it may represent is alpha times more frequent in documents of the corpus than all the others combined."
+\end{quotation}
+That method can be used to count how many unambiguous terms a question has. That in turn can be a dimension of the description vector. That reference mentions unambiguous key terms tend to have higher IDF (Inverted Document Index) than ambiguous key terms. However, it mentions there is an overlap in the mid-lower IDF. That overlap makes it hard to use IDF to separate unambiguous from ambiguous key terms. \cite{saif.ea:2012} mentions IDF can be used to identify misspellings.
+
+Coincidentally, \cite{Monz:2010} mentions a similar formula which is called the \emph{presence weight} formula:
+\begin{equation}
+\label{eq:presentweight}
+W_+(t) = \frac{\mathlarger\sum\nolimits_{q' \in tsv(q) \land t \in q'} avg\_prec(q') }  {\mathlarger\sum\nolimits_{q' \in tsv(q)} avg\_prec(q')}
+\end{equation}
+
+That equation compute the presence weight of the term \emph t for a given question \emph q. That number is proposed to be used as an index of term relevance with respect to the available corpus. That information can be used to determine if the content of any given pair of messages has the same weight with respect to the current corpus. % what will happen if the corpus improves?, how that is going to affect this measure?
+
+Both equations \ref{eq:presentweight} of \cite{saif.ea:2012} and \ref{eq:unambiguous} calculate the ratio of the number of observations of \emph t with respecto to the 100\% of considered observations in the experiment. However, equation \ref{eq:presentweight} is paired with the equation called \emph{Absence Weight}:
+\begin{equation}
+\label{eq:abcenseweight}
+W_-(t) = \frac{\mathlarger\sum\nolimits_{q' \in tsv(q) \land t \notin q'} avg\_prec(q') }  {\mathlarger\sum\nolimits_{q' \in tsv(q)} avg\_prec(q')}
+\end{equation}
+
+\cite{Monz:2010} suggests a statistic value called gain:
+\begin{equation}
+\label{eq:gain}
+gain(t) = w_+(t) - w_-(t)
+\end{equation}
+The gain function considers the case when the average precision of the term \emph t is greater than the presence precision. Thus equation \ref{eq:gain} could result in a negative number. For this work such a value means that the term \emph t most likely is not a keyword that improve the differentiation test between two arbitrary messages under evaluation.
+%------------------------------------------------
+\section{Corpus of Questions}
+Each time a new question is processed it should be added to the corpus of questions since it will offer information for the next answer query. When a question is to be added to the questions and answers database, the question structure and contests are analyzed and a description vector for the question is generated. That description vector becomes the label for that question in the corpus. In that way the next question that shall be processed can be analyzed and categorized.
+%------------------------------------------------
 \section{Method}
+\cite{benotti:2014} proposes a method to interpret directions given to a system. Some parts of that method can be reused in the current research. The proposed method has two phases:
+%La matriz de características propuesta es una variante del proceso de anotación propuesto por Benotti, 2014. La fase de anotación puede dividirse en dos pasos:
+\begin{enumerate}
+\item[Annotation (done once)] \hfill \\
+Associates an instruction with a system reaction. For the current investigation the description vector is the question annotation and the answer is the system reaction.
+\begin{enumerate}
+\item[Segmentation] \hfill \\
+Divide or segment the interaction into instructions and reactions. This applies in the the current work as splitting the initial text into the several questions that may be hidden into it.
+\item[Discretize] \hfill \\
+Discretize reactions into canonical action sequences. Proposal is to approach discretization as the extraction of relevant characteristics from the text being analyzed. Section \ref{sec:dimentions} elaborates the proposed process.
+\end{enumerate}
+
+\item[Interpretation] \hfill \\
+Predict a system reaction based on system reactions previously observed in the answers corpus.
+\begin{enumerate}
+\item[Filter] \hfill \\
+Filter the annotation-reaction pair. Keep only those pares in which the reaction can be directly executed from current state. This represent a constraint. The constraint used in this investigation is a maximum distance two questions may be to be considered equivalent.
+\item[Group] \hfill \\
+Group the pairs set based on its reaction. This is group questions based on their answer closeness; i.e. clusters.
+\item[Selection] \hfill \\
+Chose the group with the instructions that are the closest to the given instruction. Meaning, propose the answers of the questions with the most similar description vectors to the description vector of the question being analyzed.
+\end{enumerate}
+
+\label{table:lst_dimcont} % is used to refer this table in the text
+\end{enumerate}
+
+
 The way the proposed algorithm is expected to work is by extracting a description vector from the short messages being processed and computing the distance with respect other questions previously made. As the questions and answers database grows the searches will take more time each time. To overcome that situation, the questions will be classified based on a hashing function like minhashing. The algorithm is the following: 
 \begin{enumerate}
 \item Question in natural language \emph{Q} is entered to the system.
 \item Information extraction algorithm generates the description vector \emph{v} from \emph{Q}.
 \item Hashing function \emph{m()} is used to generate a hashing value \emph{h} from \emph{v}.
-\item The hashing value \emph{h} is looked for in the questions database.
+\item The hashing value \emph{h} is looked for in the questions database as described in \ref{table:lst_dimcont}.
 \item if it is found, then the answer associated to that question is selected as proposed answer and the system will claim \emph{Q -> A}
 \item If it is not found, then \emph{A} is empty and it is associated to \emph{h}.
 \item \emph{h} is added to the questions database.
@@ -116,40 +205,55 @@ The way the proposed algorithm is expected to work is by extracting a descriptio
 
 Whenever an empty answer is found in the system, human expert intervention is requested. Once the question is solved by the expert human, the empty entry for that answer is replaced by the provided response.
 
-\section{Information Retrieval Dimensions}
-The function of the words the processed text is composed of is different. Some of those words hold more information than others. As \cite{Monz:2010} suggests, the words with higher inverted document frequency (idf) will be preferred to determine the topic of the short text % citar trabajos que hablen de este tema.
-:
-\begin{equation}
-\label{eq:idf}
-idf(t) = log{N/df(t)}
-\end{equation}
-Where \emph{N} is the number of documents in the collection and \emph{df(t)} is the number of documents in which \emph{t} occurs.
+\section{Information Retrieval Dimensions}\label{sec:dimentions}
+%------------------------------------------------
+\subsection{Content Dimensions}
+\begin{description}
+\item[Ambiguity Index] \hfill \\
+This dimension is computed with equation \ref{eq:gain} and will allow the differentiation between two questions.
+\label{table:lst_dimcont} % is used to refer this table in the text
+\end{description}
 
-Equation \ref{eq:idf} will help to determine a list of candidate words for to identify the message topic. However, that equation measures frequency not unambiguity. Reference \cite{saif.ea:2012} proposes a method to identify unambiguous keywords. That method can be used to count how many unambiguous terms a question has. That in turn can be a dimension of the description vector. That reference mentions unambiguous key terms tend to have higher IDF (Inverted Document Index) than ambiguous key terms. However, it mentions there is an overlap in the mid-lower IDF. That overlap makes it hard to use IDF to separate unambiguous from ambiguous key terms. \cite{saif.ea:2012} mentions IDF can be used to identify misspellings.
+%------------------------------------------------
+\subsection{Shaping Dimentions}
 
-Reference \cite{saif.ea:2012} interprets Caps First Ratio as names. This can be used to differentiate a question that talks about names from another that does not. This can be another dimension.
-
-Reference \cite{saif.ea:2012} shows that stop words and auxiliary language is less often in query streams. If those elements are being used less then they offer little information and can be neglected. The current work proposes to ignore stop words during description vector creation.
-
-Reference \cite{saif.ea:2012} used Yahoo! Term Extractor API, Stanford Named Entity Recognizer
+Reference \cite{saif.ea:2012} mentions that stop words and auxiliary language offer little information. Given that, those words will not be considered as relevant characteristics for the message comparison.
+Reference \cite{saif.ea:2012} used Yahoo! Term Extractor API, Stanford Named Entity Recognizer.
 
 From reference \cite{saif.ea:2012} mentions for some real world applications they cannot afford extracting an incorrect keyword from a noisy text.
 
 
-%------------------------------------------------
 \begin{description}
+\item[Caps First Ratio] \hfill \\
+Reference \cite{saif.ea:2012} interprets Caps First Ratio as names. This can be used to differentiate a question that talks about names from another that does not.
 \item[Unambiguous Words] \hfill \\
 Number of unambiguous worlds in phrase.  
 \item[Capitalized Words] \hfill \\
 Number of capitalized worlds in phrase(potential names). 
 \item[SER] \hfill \\
-It tells how often a given keyword shows up by itself in the search box.
+It tells how often a given keyword shows up by itself in the search box. This is helpful because it may allow the system to detect common terms used in queries.
+% Common queries/terms used along several questions.
 \label{table:lst_dimensions} % is used to refer this table in the text
 \end{description}
 
 
 %------------------------------------------------
+\subsection{Statistics not Considered}
+The following metrics were proposed by \cite{saif.ea:2012}, however, they are not considered as relevant characteristics for the underlined experiment. The reasons why that decision was made is documented in the following paragraphs.
+\begin{description}
+\item[Search Bias] \hfill \\
+This metric relates a key word, its appearance in the question corpus and its appearance in a larger corpus. The former is referred to as logs corpus by the authors and the later as Web corpus. The text being analyzed in this investigation can be analyzed in a questions corpus. Notwithstanding that, the question corpus is the biggest scope a given term can be analyzed against. Thus there are not two levels of corpus scope to relate.
+\item[Inverse Document Frequency] \hfill \\
+The mentioned authors suggest this metric can be used for ambiguous terms detection. For the present investigation \ref{eq:gain} is being used with that purpose.
+\item[Session Inverse Document Frequency] \hfill \\
+SIDF works over a user session. It consideres the query stream of such session as a document. The text being analyzed in this investigation is not meant to change nor gotten from a live stream.
+\label{table:lst_notdimensions} % is used to refer this table in the text
+\end{description}
 
+
+%------------------------------------------------
+\section{Test Set Definition}
+The test data has been obtained from \cite{IFAI:2014}.
 %\section{Results}
 
 %\begin{table}[H]
